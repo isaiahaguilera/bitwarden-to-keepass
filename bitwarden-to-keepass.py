@@ -7,7 +7,7 @@ import sys
 from argparse import ArgumentParser
 
 from pykeepass import PyKeePass
-from pykeepass.exceptions import CredentialsIntegrityError
+from pykeepass.exceptions import CredentialsError
 
 from item import Item, Types as ItemTypes
 
@@ -17,7 +17,7 @@ logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 def bitwarden_to_keepass(args):
     try:
         kp = PyKeePass(args.database_path, password=args.database_password, keyfile=args.database_keyfile)
-    except CredentialsIntegrityError as e:
+    except CredentialsError as e:
         logging.error(f'Wrong password for KeePass database: {e}')
         return
 
@@ -56,6 +56,7 @@ def bitwarden_to_keepass(args):
             break # todo append additional uris to notes?
 
         for field in bw_item.get_custom_fields():
+            # print(str(field['name']), field['value'])
             e.set_custom_property(str(field['name']), field['value'])
 
         for attachment in bw_item.get_attachments():
